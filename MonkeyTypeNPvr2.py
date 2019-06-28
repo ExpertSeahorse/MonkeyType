@@ -6,6 +6,8 @@ import json
 import os
 """
 Finds the avg time/tries the script will need to match the answer
+
+Use the autosave files created to monitor progress in the program
 """
 # Sets file names for saving
 trial = 'trial_save.txt'
@@ -49,6 +51,7 @@ for i in range(done, 10):
     match = False
     while not match:
         # make a random selection of letters from the answer bank...
+        # using numpy.random.choice to choose the characters is 2x faster than using a for loop
         ans = np.random.choice(strngbank, size=len(target_str))
 
         # And if those letters are the same as the key...
@@ -68,15 +71,18 @@ for i in range(done, 10):
             with open(auto_save, 'w') as file:
                 # And dump it into a JSON
                 json.dump(a_dict, file)
-    # After a match is made, add the count total to an array and add the delta time to another
+
+    # After a match is made, add the count total to an array and add the delta time to another array
     avg_ct.append(count)
     avg_time.append(time.time() - start + old_time)
+
     # And back it up
     with open(trial, 'w') as file:
         t_dict = {'trial': i,
                   'avg_count': avg_ct,
                   'avg_time': avg_time}
         json.dump(t_dict, file)
+
     # If there is an autosave, delete it so it wont interrupt the next run
     if os.path.exists(auto_save):
         os.remove(auto_save)
