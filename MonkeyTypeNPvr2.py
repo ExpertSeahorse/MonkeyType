@@ -29,7 +29,7 @@ else:
 
 # Set the answer bank and the key
 strngbank = np.array(list(string.ascii_letters))
-target_str = "ABCd"
+target_str = "ABC"
 
 # Over the number of trials...
 for i in range(done, 10):
@@ -38,7 +38,7 @@ for i in range(done, 10):
         with open(auto_save, 'r') as file:
             # Load the values from the save
             a_dict_in = json.load(file)
-            count = a_dict_in['count']
+            count = a_dict_in['count']-1
             old_time = a_dict_in['passed_time']
             start = time.time()
     else:
@@ -78,7 +78,7 @@ for i in range(done, 10):
 
     # And back it up
     with open(trial, 'w') as file:
-        t_dict = {'trial': i,
+        t_dict = {'trial': i+1,
                   'avg_count': avg_ct,
                   'avg_time': avg_time}
         json.dump(t_dict, file)
