@@ -2,7 +2,7 @@ from string import ascii_letters
 from time import time
 from numpy import array, random
 from os import path, remove
-import json
+from json import load, dump
 """
 By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
@@ -14,7 +14,7 @@ auto_save = 'autosave.txt'
 if path.exists(auto_save):
     with open(auto_save, 'r') as file:
         # Load the values from the save
-        jdict_in = json.load(file)
+        jdict_in = load(file)
         count = jdict_in['count']
         time_passed = jdict_in['time_passed']
 else:
@@ -44,7 +44,7 @@ while not match:
         jdict = {'count': count,
                  'time_passed': time()-start}
         with open(auto_save, 'w') as file:
-            json.dump(jdict, file)
+            dump(jdict, file)
 
 # After the test is over, if there is an autosave file, delete it
 if path.exists(auto_save):
