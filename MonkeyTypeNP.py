@@ -24,7 +24,7 @@ else:
 
 # Set default variables, the letter bank, and the answer string
 strngbank = array(list(ascii_letters))
-strng = "ab"
+strng = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 start = time()
 match = False
 # While there is no match...

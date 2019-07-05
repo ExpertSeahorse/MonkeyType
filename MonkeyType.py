@@ -30,10 +30,11 @@ while not match:
         # Otherwise, add one to count
         count += 1
     # If count is 1 million...
-    if count == 100000:
+    if count == 1000000:
         # break out of the loop
         # This is used to find the time is takes to hit 1 million tries,
         # otherwise I'd put an output statement here to ensure the program is working
+        match = True
         break
 
 # Print the results of the test
