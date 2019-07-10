@@ -7,7 +7,7 @@ from os import path, remove
 """
 Finds the avg time/tries the script will need to match the answer
 
-Use the autosave files created to monitor progress in the program
+Use the auto_save files created to monitor progress in the program
 """
 # Sets file names for saving
 trial = 'trial_save.txt'
@@ -33,7 +33,7 @@ target_str = "ABC"
 
 # Over the number of trials...
 for i in range(done, 10):
-    # If there is an autosave from an interrupted run:
+    # If there is an auto_save from an interrupted run:
     if path.exists(auto_save):
         with open(auto_save, 'r') as file:
             # Load the values from the save
@@ -83,7 +83,7 @@ for i in range(done, 10):
                   'avg_time': avg_time}
         dump(t_dict, file)
 
-    # If there is an autosave, delete it so it wont interrupt the next run
+    # If there is an auto_save, delete it so it wont interrupt the next run
     if path.exists(auto_save):
         remove(auto_save)
 
