@@ -96,3 +96,18 @@ if __name__ == '__main__':
     print("\nTotal:")
     print(total_count, "Tries")
     print(time() - total_start, "Seconds")
+
+"""
+1 thread   -- 01 mil: 77.09s
+10 threads -- 10 mil: 327.18s
+
+1 t  -- 10 mil: 770.9s
+10 t -- 1 mil: 32.718s
+
+10t is 2.356x faster than 1t for reaching 10mil but each thread is 4.244x slower 
+
+On computer with:
+Intel i5-5300U @ 2.3GHz
+8 GB RAM
+**Running Chrome and Outlook
+"""
