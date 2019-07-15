@@ -10,7 +10,6 @@ match = False
 start = time()
 
 # Set the total answer bank of letters and the arrangement we are looking for
-strngbank = ascii_letters
 strng = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 # Until there is a match...
@@ -19,7 +18,7 @@ while not match:
     # For the total length of the string...
     for letter in range(len(strng)):
         # choose a random letter from the bank and add it to the possible answer
-        a = choice(strngbank)
+        a = choice(ascii_letters)
         ans.append(a)
 
     # If the random letters match the answer string...

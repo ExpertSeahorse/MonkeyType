@@ -2,6 +2,7 @@
   <dictionary name="DFeldman">
     <words>
       <w>autosave</w>
+      <w>strng</w>
       <w>strngbank</w>
     </words>
   </dictionary>
