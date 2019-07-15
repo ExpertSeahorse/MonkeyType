@@ -1,56 +1,73 @@
-from random import choice
 from string import ascii_letters
 from time import time
-from threading import Thread
+from numpy import array, random
 from os import path, remove
+from json import load, dump
+from threading import Thread
 """
-This is an exploration of how threading can be used to shorten operation time
+By using numpy arrays to create the strings instead of a for loop,
+the speed of the program is doubled
 """
+# Set the file names
+auto_save = 'autosave.txt'
+thread_put = 'thread_put.txt'
 
 
-def logic_loop(strng):
-    # Set the variables to their defaults
-    count = 0
+def logic_loop(strng, thread_num):
+    t_auto_save = str(thread_num) + auto_save
+    # If there is an autosave from an interrupted run:
+    if path.exists(t_auto_save):
+        with open(t_auto_save, 'r') as file:
+            # Load the values from the save
+            j_dict_in = load(file)
+            count = j_dict_in['count']
+            time_passed = j_dict_in['time_passed']
+    else:
+        # otherwise keep them to defaults
+        count = 0
+        time_passed = 0
+
+    # Set default variables, the letter bank, and the answer string
+    strngbank = array(list(ascii_letters))
     start = time()
     match = False
-    # Set the total answer bank of letters and the arrangement we are looking for
-    # Until there is a match...
+    # While there is no match...
     while not match:
-        ans = []
-        # For the total length of the string...
-        for letter in range(len(strng)):
-            # choose a random letter from the bank and add it to the possible answer
-            a = choice(ascii_letters)
-            ans.append(a)
+        # Make a random string with numpy's random.choice
+        ans = random.choice(strngbank, size=len(strng))
 
-        # If the random letters match the answer string...
+        # if that random string matches the answer key, break the loop
         if "".join(ans) == strng:
-            # break the loop
             match = True
+        # Otherwise add one to count
         else:
-            # Otherwise, add one to count
             count += 1
-        # If count is 1 million...
-        if count == 1000000:
-            # break out of the loop
-            # This is used to find the time is takes to hit 1 million tries,
-            # otherwise I'd put an output statement here to ensure the program is working
-            match = True
-            break
 
-    with open(filename, 'a') as file:
-        print(count, time()-start, file=file)
+        # If count hits 1 million, 2 million, ...
+        if count % 1000000 == 0:
+            # save the count number and time passed
+            jdict = {'count': count,
+                     'time_passed': time()-start}
+            with open(t_auto_save, 'w') as file:
+                dump(jdict, file)
+
+    # Export the collected data into the thread output file
+    with open(thread_put, 'a') as file:
+        print(count, time() - start + time_passed, file=file)
+
+    # After the test is over, if there is an autosave file, delete it
+    if path.exists(t_auto_save):
+        remove(t_auto_save)
 
 
 if __name__ == '__main__':
     total_start = time()
-    filename = 'output.txt'
     # Clears / Creates the output file to collect information from the threads
-    with open(filename, 'w') as file:
+    with open(thread_put, 'w') as file:
         pass
 
     thread_list = []
-    strng = 'AbCdEFghiJkLmnopqRSTu'
+    strng = 'abc'
     thread_ct = 10
     # str_wid = round(len(strng)/thread_ct)
 
@@ -58,7 +75,7 @@ if __name__ == '__main__':
     for i in range(1, thread_ct + 1):
         # Create a thread of the function logic_loop and pass the strng parameter
         # Need to pass str type parameters as len 1 tuples or else they are passed as an array of chars
-        run_thread = Thread(target=logic_loop, args=(strng,))
+        run_thread = Thread(target=logic_loop, args=(strng, i))
         # Add the thread to a list for later
         thread_list.append(run_thread)
         # Start the thread
@@ -72,7 +89,7 @@ if __name__ == '__main__':
         print("Thread #", i + 1, "is done")
 
     # within the output file...
-    with open(filename, 'r') as file:
+    with open(thread_put, 'r') as file:
         # import the data
         fin = file.read()
         # split the lines into an array
@@ -99,19 +116,4 @@ if __name__ == '__main__':
     print(time() - total_start, "Seconds")
 
     # Removes the file at the end of the script
-    remove(filename)
-
-"""
-1 thread   -- 01 mil: 77.09s
-10 threads -- 10 mil: 327.18s
-
-1 t  -- 10 mil: 770.9s
-10 t -- 1 mil: 32.718s
-
-10t is 2.356x faster than 1t for reaching 10mil but each thread is 4.244x slower 
-
-On computer with:
-Intel i5-5300U @ 2.3GHz
-8 GB RAM
-**Running Chrome and Outlook
-"""
+    remove(thread_put)
