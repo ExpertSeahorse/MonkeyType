@@ -1,22 +1,27 @@
 from string import ascii_letters
 from time import time
 from numpy import array, random
-from os import path, remove
+import os
 from json import load, dump
 from threading import Thread
+from pathlib import Path
+from shutil import rmtree
 """
 By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
 """
-# Set the file names
+# Set the file structure
+folder = 'Auto_saves'
+p = Path(folder)
+p.mkdir(exist_ok=True)
 auto_save = '_autosave.txt'
 thread_put = 'thread_put.txt'
 
 
 def logic_loop(strng, thread_num):
-    t_auto_save = str(thread_num) + auto_save
+    t_auto_save = os.path.join(folder, str(thread_num) + auto_save)
     # If there is an autosave from an interrupted run:
-    if path.exists(t_auto_save) and 'Finished' not in t_auto_save:
+    if os.path.exists(t_auto_save) and 'Finished' not in t_auto_save:
         with open(t_auto_save, 'r') as file:
             # Load the values from the save
             j_dict_in = load(file)
@@ -24,7 +29,7 @@ def logic_loop(strng, thread_num):
             time_passed = j_dict_in['time_passed']
 
     # If the run finished, but others didnt...
-    elif path.exists(t_auto_save) and 'Finished' in t_auto_save:
+    elif os.path.exists(t_auto_save) and 'Finished' in t_auto_save:
         # Abort the function
         return None
 
@@ -57,7 +62,7 @@ def logic_loop(strng, thread_num):
             with open(t_auto_save, 'w') as file:
                 dump(jdict, file)
 
-    if path.exists(t_auto_save):
+    if os.path.exists(t_auto_save):
         with open(t_auto_save, 'a') as file:
             print("Finished", file=file)
 
@@ -89,13 +94,12 @@ if __name__ == '__main__':
         thread_list.append(run_thread)
         # Start the thread
         run_thread.start()
+
     print("All threads started")
     # For the threads in the list from before...
     for i, thread in enumerate(thread_list):
         # Wait until the next thread has finished (or continue immediately if it was faster than the prev one)
         thread.join()
-        # Print that it's done
-        print("Thread #", i + 1, "is done")
 
     # within the output file...
     with open(thread_put, 'r') as file:
@@ -125,7 +129,4 @@ if __name__ == '__main__':
     print(time() - total_start, "Seconds")
 
     # Removes the files at the end of the script
-    if path.exists(str(1) + auto_save):
-        for i in range(1, thread_ct + 1):
-            remove(str(i) + auto_save)
-    remove(thread_put)
+    rmtree(folder)

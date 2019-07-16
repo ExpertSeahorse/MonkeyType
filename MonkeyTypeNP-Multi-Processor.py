@@ -1,20 +1,27 @@
 from string import ascii_letters
 from time import time
 from numpy import array, random
-from os import path, remove, cpu_count
+from os import path, cpu_count
 from json import load, dump
 import multiprocessing as mp
+from pathlib import Path
+from shutil import rmtree
+
 """
 By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
 """
-# Set the file names
+# Set the file structure
+folder = 'Auto_saves'
+p = Path(folder)
+p.mkdir(exist_ok=True)
 auto_save = '_autosave.txt'
-process_put = 'process_put.txt'
+process_put = 'thread_put.txt'
 
 
 def logic_loop(strng, process_num):
-    t_auto_save = str(process_num) + auto_save
+    t_auto_save = path.join(folder, str(process_num) + auto_save)
+
     # If there is an autosave from an interrupted run:
     if path.exists(t_auto_save) and 'Finished' not in t_auto_save:
         with open(t_auto_save, 'r') as file:
@@ -22,14 +29,17 @@ def logic_loop(strng, process_num):
             j_dict_in = load(file)
             count = j_dict_in['count']
             time_passed = j_dict_in['time_passed']
+
     # If the run finished, but others didnt...
     elif path.exists(t_auto_save) and 'Finished' in t_auto_save:
         # Abort the function
         return None
+
     else:
         # otherwise keep them to defaults
         count = 0
         time_passed = 0
+
     # Set default variables, the letter bank, and the answer string
     strngbank = array(list(ascii_letters))
     start = time()
@@ -54,6 +64,10 @@ def logic_loop(strng, process_num):
             with open(t_auto_save, 'w') as file:
                 dump(jdict, file)
 
+    if path.exists(t_auto_save):
+        with open(t_auto_save, 'a') as file:
+            print("Finished", file=file)
+
     # Export the collected data into the process output file
     with open(process_put, 'a') as file:
         print("Thread#" + str(process_num) + ":", count, time() - start + time_passed, file=file)
@@ -69,7 +83,7 @@ if __name__ == '__main__':
         pass
 
     process_list = []
-    strng = 'abc'
+    strng = 'abcde'
     process_ct = cpu_count()
     # str_wid = round(len(strng)/process_ct)
 
@@ -116,8 +130,10 @@ if __name__ == '__main__':
     print(total_count, "Tries")
     print(round(time() - total_start, 3), "Seconds")
 
+    # Print the totals
+    print("\nTotal:")
+    print(total_count, "Tries")
+    print(time() - total_start, "Seconds")
+
     # Removes the files at the end of the script
-    if path.exists(str(1) + auto_save):
-        for i in range(1, process_ct + 1):
-            remove(str(i) + auto_save)
-    remove(process_put)
+    rmtree(folder)
