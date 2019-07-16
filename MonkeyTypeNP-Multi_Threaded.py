@@ -9,7 +9,7 @@ By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
 """
 # Set the file names
-auto_save = 'autosave.txt'
+auto_save = '_autosave.txt'
 thread_put = 'thread_put.txt'
 
 
@@ -53,7 +53,7 @@ def logic_loop(strng, thread_num):
 
     # Export the collected data into the thread output file
     with open(thread_put, 'a') as file:
-        print(count, time() - start + time_passed, file=file)
+        print(thread_num, count, time() - start + time_passed, file=file)
 
     # After the test is over, if there is an autosave file, delete it
     if path.exists(t_auto_save):
@@ -83,8 +83,7 @@ if __name__ == '__main__':
         thread_list.append(run_thread)
         # Start the thread
         run_thread.start()
-        print("Thread", i, "started")
-
+    print("All threads started")
     # For the threads in the list from before...
     for i, thread in enumerate(thread_list):
         # Wait until the next thread has finished (or continue immediately if it was faster than the prev one)
@@ -107,8 +106,8 @@ if __name__ == '__main__':
     total_count = 0
     i = 1
     # Print the results of each of the threads
-    for ct, t in output:
-        print('Trial #' + str(i))
+    for thr_num, ct, t in output:
+        print('Trial #' + str(thr_num))
         print(ct, "Tries")
         print(t, "Seconds")
         total_count += int(ct)
