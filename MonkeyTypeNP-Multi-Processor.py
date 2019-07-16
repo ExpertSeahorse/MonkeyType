@@ -10,6 +10,8 @@ from shutil import rmtree
 """
 By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
+
+This is also an exploration of Processing, and is currently the most powerful variant of this program  
 """
 # Set the file structure
 folder = 'Auto_saves'

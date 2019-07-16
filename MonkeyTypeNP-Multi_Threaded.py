@@ -8,7 +8,9 @@ from pathlib import Path
 from shutil import rmtree
 """
 By using numpy arrays to create the strings instead of a for loop,
-the speed of the program is doubled
+the speed of the program is doubled.
+
+This is also an exploration of Threading, see *-Processor for the superior Processor equivalent  
 """
 # Set the file structure
 folder = 'Auto_saves'

@@ -8,6 +8,8 @@ from os import path, remove
 Finds the avg time/tries the script will need to match the answer
 
 Use the auto_save files created to monitor progress in the program
+
+Uses only one process
 """
 # Sets file names for saving
 trial = 'trial_save.txt'
