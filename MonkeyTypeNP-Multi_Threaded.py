@@ -16,12 +16,18 @@ thread_put = 'thread_put.txt'
 def logic_loop(strng, thread_num):
     t_auto_save = str(thread_num) + auto_save
     # If there is an autosave from an interrupted run:
-    if path.exists(t_auto_save):
+    if path.exists(t_auto_save) and 'Finished' not in t_auto_save:
         with open(t_auto_save, 'r') as file:
             # Load the values from the save
             j_dict_in = load(file)
             count = j_dict_in['count']
             time_passed = j_dict_in['time_passed']
+
+    # If the run finished, but others didnt...
+    elif path.exists(t_auto_save) and 'Finished' in t_auto_save:
+        # Abort the function
+        return None
+
     else:
         # otherwise keep them to defaults
         count = 0
@@ -51,15 +57,15 @@ def logic_loop(strng, thread_num):
             with open(t_auto_save, 'w') as file:
                 dump(jdict, file)
 
+    if path.exists(t_auto_save):
+        with open(t_auto_save, 'a') as file:
+            print("Finished", file=file)
+
     # Export the collected data into the thread output file
     with open(thread_put, 'a') as file:
         print(thread_num, count, time() - start + time_passed, file=file)
 
-    # After the test is over, if there is an autosave file, delete it
-    if path.exists(t_auto_save):
-        remove(t_auto_save)
-
-    # Returns count and the amount of time it took to complete the processing
+    # Returns count and the amount of time it took to complete the processing (For potential future programs)
     return count, time() - start + time_passed
 
 
@@ -118,5 +124,8 @@ if __name__ == '__main__':
     print(total_count, "Tries")
     print(time() - total_start, "Seconds")
 
-    # Removes the file at the end of the script
+    # Removes the files at the end of the script
+    if path.exists(str(1) + auto_save):
+        for i in range(1, thread_ct + 1):
+            remove(str(i) + auto_save)
     remove(thread_put)

@@ -9,19 +9,23 @@ By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
 """
 # Set the file names
-auto_save = 'autosave.txt'
+auto_save = '_autosave.txt'
 process_put = 'process_put.txt'
 
 
 def logic_loop(strng, process_num):
     t_auto_save = str(process_num) + auto_save
     # If there is an autosave from an interrupted run:
-    if path.exists(t_auto_save):
+    if path.exists(t_auto_save) and 'Finished' not in t_auto_save:
         with open(t_auto_save, 'r') as file:
             # Load the values from the save
             j_dict_in = load(file)
             count = j_dict_in['count']
             time_passed = j_dict_in['time_passed']
+    # If the run finished, but others didnt...
+    elif path.exists(t_auto_save) and 'Finished' in t_auto_save:
+        # Abort the function
+        return None
     else:
         # otherwise keep them to defaults
         count = 0
@@ -53,10 +57,6 @@ def logic_loop(strng, process_num):
     # Export the collected data into the process output file
     with open(process_put, 'a') as file:
         print("Thread#" + str(process_num) + ":", count, time() - start + time_passed, file=file)
-
-    # After the test is over, if there is an autosave file, delete it
-    if path.exists(t_auto_save):
-        remove(t_auto_save)
 
     # Returns count and the amount of time it took to complete the processing
     return count, time() - start + time_passed
@@ -116,5 +116,8 @@ if __name__ == '__main__':
     print(total_count, "Tries")
     print(round(time() - total_start, 3), "Seconds")
 
-    # Removes the file at the end of the script
+    # Removes the files at the end of the script
+    if path.exists(str(1) + auto_save):
+        for i in range(1, process_ct + 1):
+            remove(str(i) + auto_save)
     remove(process_put)
