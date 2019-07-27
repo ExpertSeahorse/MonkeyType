@@ -11,7 +11,9 @@ from shutil import rmtree
 By using numpy arrays to create the strings instead of a for loop,
 the speed of the program is doubled
 
-This is also an exploration of Processing, and is currently the most powerful variant of this program  
+This is also an exploration of the Processing module, and is currently the most powerful variant of this program
+
+This variant of the program splits the requested string into parts for each of the processes to handle
 """
 # Set the file structure
 folder = 'Auto_saves'
@@ -85,15 +87,26 @@ if __name__ == '__main__':
         pass
 
     process_list = []
-    strng = 'ab'
+    strng = 'TheBlueGooseIsHungry'
     process_ct = cpu_count()
-    # str_wid = round(len(strng)/process_ct)
+    process_string = []
+    for i in range(process_ct):
+        s = round(i * len(strng) / process_ct)
+        s1 = round((i+1) * len(strng) / process_ct)
+        letters = strng[s:s1]
+        if letters:
+            process_string.append(letters)
+            print(letters)
 
     # for the desired # of processes...
+    if len(process_string) < process_ct:
+        process_ct = len(process_string)
+
     for i in range(1, process_ct + 1):
         # Create a process of the function logic_loop and pass the strng parameter
         # Need to pass str type parameters as len 1 tuples or else they are passed as an array of chars
-        run_process = mp.Process(target=logic_loop, args=(strng, i))
+        print('Thread#', i, 'string:', process_string[i-1])
+        run_process = mp.Process(target=logic_loop, args=(process_string[i-1], i))
         # Add the process to a list for later
         process_list.append(run_process)
         # Start the process
@@ -131,11 +144,6 @@ if __name__ == '__main__':
     print("\nTotal:")
     print(total_count, "Tries")
     print(round(time() - total_start, 3), "Seconds")
-
-    # Print the totals
-    print("\nTotal:")
-    print(total_count, "Tries")
-    print(time() - total_start, "Seconds")
 
     # Removes the files at the end of the script
     rmtree(folder)
